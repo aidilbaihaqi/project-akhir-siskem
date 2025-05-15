@@ -15,5 +15,8 @@
   </ul>
 
   <h4>SEMANGAT YEEEEEEEEEEEE</h4>
+
+  <h5>oh ya jangan lupa, kalau file .php itu dijalanin di dalam folder htdocs</h5>
+  <h5>contoh nih kalau kalian clone folder ini semua brrti link accessnya nnti bakal <a href="http://localhost/v1/index.php">http://localhost/v1/index.php</a>, begituch :3</h5>
 </body>
 </html>
