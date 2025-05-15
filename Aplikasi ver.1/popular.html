@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diskusi Populer - SURAM</title>
+    <meta name="description" content="Diskusi paling populer di forum mahasiswa">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .discussion-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #0d6efd;
+        }
+        .discussion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ffc107;
+            color: #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">SURAM</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="categories.html">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="popular.html">Popular</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-light me-2">Login</a>
+                    <a href="register.html" class="btn btn-light">Register</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Populer</li>
+                    </ol>
+                </nav>
+                <h1 class="h2">Diskusi Populer</h1>
+                <p class="lead">Topik yang sedang banyak dibicarakan oleh mahasiswa</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Filter -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="sortBy" class="form-label">Urutkan</label>
+                                <select class="form-select" id="sortBy">
+                                    <option selected>Paling Populer</option>
+                                    <option>Paling Banyak Komentar</option>
+                                    <option>Terbaru</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="timeRange" class="form-label">Rentang Waktu</label>
+                                <select class="form-select" id="timeRange">
+                                    <option selected>Semua Waktu</option>
+                                    <option>Hari Ini</option>
+                                    <option>Minggu Ini</option>
+                                    <option>Bulan Ini</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="categoryFilter" class="form-label">Kategori</label>
+                                <select class="form-select" id="categoryFilter">
+                                    <option selected>Semua Kategori</option>
+                                    <option>Akademik</option>
+                                    <option>Organisasi</option>
+                                    <option>Beasiswa</option>
+                                    <option>Karir</option>
+                                    <option>Teknologi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Discussions -->
+                <div class="list-group mb-5">
+                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3 position-relative">
+                        <div class="popular-badge">1</div>
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Protes Uang Pangkal Mahasiswa Baru</h5>
+                            <small class="text-muted">3 hari lalu</small>
+                        </div>
+                        <p class="mb-1">Mahasiswa dari berbagai universitas melakukan protes terhadap kebijakan uang pangkal yang dinilai memberatkan.</p>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Oleh: <strong>Rudi Hermawan</strong> di <strong>Akademik</strong></small>
+                            <div>
+                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 142</span>
+                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 2.1k</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3 position-relative">
+                        <div class="popular-badge">2</div>
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Kritik Sistem Pembelajaran Daring</h5>
+                            <small class="text-muted">5 hari lalu</small>
+                        </div>
+                        <p class="mb-1">Banyak mahasiswa mengeluhkan sistem pembelajaran daring yang dianggap kurang efektif untuk beberapa mata kuliah.</p>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Oleh: <strong>Siti Aisyah</strong> di <strong>Akademik</strong></small>
+                            <div>
+                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 98</span>
+                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 1.8k</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3 position-relative">
+                        <div class="popular-badge">3</div>
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Gerakan Mahasiswa Tolak Kenaikan UKT</h5>
+                            <small class="text-muted">1 minggu lalu</small>
+                        </div>
+                        <p class="mb-1">BEM dari berbagai universitas bersatu menolak kenaikan Uang Kuliah Tunggal yang dianggap tidak transparan.</p>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Oleh: <strong>BEM Universitas</strong> di <strong>Akademik</strong></small>
+                            <div>
+                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 76</span>
+                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 1.5k</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Pengalaman Magang di Perusahaan Startup</h5>
+                            <small class="text-muted">1 minggu lalu</small>
+                        </div>
+                        <p class="mb-1">Bagaimana pengalaman kalian magang di perusahaan startup? Apa kelebihan dan kekurangannya?</p>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Oleh: <strong>Dewi Anggraeni</strong> di <strong>Karir</strong></small>
+                            <div>
+                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 65</span>
+                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 1.2k</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Tips Menghadapi Skripsi Tanpa Stress</h5>
+                            <small class="text-muted">2 minggu lalu</small>
+                        </div>
+                        <p class="mb-1">Berbagi pengalaman dan tips menyelesaikan skripsi dengan baik tanpa harus mengalami stress berlebihan.</p>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Oleh: <strong>Budi Santoso</strong> di <strong>Akademik</strong></small>
+                            <div>
+                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 54</span>
+                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 987</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Trending This Week -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Trending Minggu Ini</h5>
+                        <div class="list-group list-group-flush">
+                            <a href="discussion.html" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Protes Uang Pangkal Mahasiswa Baru</h6>
+                                    <small class="text-muted">3 hari lalu</small>
+                                </div>
+                                <small class="text-muted">Oleh: Rudi Hermawan</small>
+                            </a>
+                            <a href="discussion.html" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Kritik Sistem Pembelajaran Daring</h6>
+                                    <small class="text-muted">5 hari lalu</small>
+                                </div>
+                                <small class="text-muted">Oleh: Siti Aisyah</small>
+                            </a>
+                            <a href="discussion.html" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Gerakan Mahasiswa Tolak Kenaikan UKT</h6>
+                                    <small class="text-muted">1 minggu lalu</small>
+                                </div>
+                                <small class="text-muted">Oleh: BEM Universitas</small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Categories -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Kategori Populer</h5>
+                        <div class="list-group list-group-flush">
+                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Akademik
+                                <span class="badge bg-primary rounded-pill">142</span>
+                            </a>
+                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Organisasi
+                                <span class="badge bg-primary rounded-pill">87</span>
+                            </a>
+                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Beasiswa
+                                <span class="badge bg-primary rounded-pill">65</span>
+                            </a>
+                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Karir
+                                <span class="badge bg-primary rounded-pill">120</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Statistik Forum</h5>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="p-3">
+                                    <h3 class="text-primary">1,245</h3>
+                                    <small>Diskusi</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3">
+                                    <h3 class="text-success">5,678</h3>
+                                    <small>Komentar</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="text-uppercase mb-4">Tentang SURAM</h5>
+                    <p>SURAM (Suara Mahasiswa) adalah platform diskusi online untuk mahasiswa Indonesia. Wadah untuk berbagi informasi, pengalaman, dan gagasan.</p>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-4">Tautan</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-white">Home</a></li>
+                        <li class="mb-2"><a href="categories.html" class="text-white">Kategori</a></li>
+                        <li class="mb-2"><a href="popular.html" class="text-white">Populer</a></li>
+                        <li class="mb-2"><a href="about.html" class="text-white">Tentang</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-4">Akun</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="login.html" class="text-white">Login</a></li>
+                        <li class="mb-2"><a href="register.html" class="text-white">Register</a></li>
+                        <li class="mb-2"><a href="profile.html" class="text-white">Profil</a></li>
+                        <li class="mb-2"><a href="settings.html" class="text-white">Pengaturan</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="text-uppercase mb-4">Newsletter</h5>
+                    <p>Dapatkan update diskusi terbaru langsung ke email Anda.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Email Anda">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">&copy; 2025 SURAM. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
