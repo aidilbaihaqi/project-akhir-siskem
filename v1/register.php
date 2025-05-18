@@ -1,0 +1,392 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once 'config.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name     = trim($_POST['name']);
+    $email    = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    // Validasi kosong
+    if (empty($name) || empty($email) || empty($password)) {
+        echo "Semua field harus diisi.";
+        exit;
+    }
+
+    // Hash password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Cek apakah email sudah terdaftar
+    $check_sql = "SELECT id FROM users WHERE email = ?";
+    $stmt = mysqli_prepare($conn, $check_sql);
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+
+    if (mysqli_stmt_num_rows($stmt) > 0) {
+        echo "Email sudah terdaftar.";
+    } else {
+        // Masukkan ke database
+        $insert_sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $insert_sql);
+        mysqli_stmt_bind_param($stmt, "sss", $name, $email, $hashed_password);
+
+        if (mysqli_stmt_execute($stmt)) {
+            echo "Registrasi berhasil!";
+        } else {
+            echo "Gagal registrasi: " . mysqli_error($conn);
+        }
+    }
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
+}
+?>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - SURAM</title>
+    <meta name="description" content="Registration page for SURAM forum">
+    <link rel="stylesheet" href="/project-akhir-siskem-main/template/public/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .register-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://picsum.photos/1920/1080?random=31');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .register-card {
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: none;
+        }
+        .register-header {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 1rem 1rem 0 0 !important;
+        }
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .btn-register {
+            background-color: #0d6efd;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-register:hover {
+            background-color: #0b5ed7;
+            color: white;
+        }
+        .password-strength {
+            height: 5px;
+            background-color: #e9ecef;
+            margin-top: 0.5rem;
+            border-radius: 2.5px;
+            overflow: hidden;
+        }
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #dc3545;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .password-hints {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .password-hints ul {
+            padding-left: 1.5rem;
+            margin-bottom: 0;
+        }
+        .password-hints li {
+            margin-bottom: 0.2rem;
+        }
+        .password-hints li.valid {
+            color: #198754;
+        }
+    </style>
+</head>
+<body>
+    <!-- Register Section -->
+    <section class="register-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card register-card">
+                        <div class="card-header register-header py-4 text-center">
+                            <h2 class="h3 mb-0">Daftar Akun SURAM</h2>
+                        </div>
+                        <div class="card-body p-5">
+                            <form id="registerForm" action="register.php" method="POST">
+                                <div class="row">
+                                    <!-- Personal Info -->
+                                    <div class="col-md-6">
+                                        <h3 class="h5 mb-4">Informasi Pribadi</h3>
+                                        
+                                        <!-- Full Name -->
+                                        <div class="mb-4">
+                                            <label for="name" class="form-label">Nama Lengkap</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                <input type="text" class="form-control" id="name" name="name" placeholder="Nama lengkap" required>
+                                            </div>
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div class="mb-4">
+                                            <label for="email" class="form-label">Alamat Email</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                                <input type="email" class="form-control" id="email" name="email" placeholder="email@contoh.com" required>
+                                            </div>
+                                        </div>
+
+                                        <!-- University -->
+                                        <div class="mb-4">
+                                            <label for="university" class="form-label">Universitas</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                                <input type="text" class="form-control" id="university" name="university" placeholder="Nama universitas" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Account Info -->
+                                    <div class="col-md-6">
+                                        <h3 class="h5 mb-4">Informasi Akun</h3>
+                                        
+                                        <!-- Username -->
+                                        <div class="mb-4">
+                                            <label for="username" class="form-label">Username</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                                                <input type="text" class="form-control" id="username" name="username" placeholder="Nama pengguna" required>
+                                            </div>
+                                            <div class="form-text">Gunakan huruf, angka, dan underscore saja</div>
+                                        </div>
+
+                                        <!-- Password -->
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="password-strength">
+                                                <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                                            </div>
+                                            <div class="password-hints mt-2">
+                                                <ul>
+                                                    <li id="lengthHint">Minimal 8 karakter</li>
+                                                    <li id="uppercaseHint">Setidaknya 1 huruf besar</li>
+                                                    <li id="numberHint">Setidaknya 1 angka</li>
+                                                    <li id="specialHint">Setidaknya 1 karakter khusus</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <!-- Confirm Password -->
+                                        <div class="mb-4">
+                                            <label for="confirmPassword" class="form-label">Konfirmasi Password</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Ulangi password" required>
+                                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="invalid-feedback" id="passwordMatchFeedback">
+                                                Password tidak cocok
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Terms and Conditions -->
+                                <div class="mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            Saya setuju dengan <a href="#" class="text-decoration-none">Syarat dan Ketentuan</a> serta <a href="#" class="text-decoration-none">Kebijakan Privasi</a>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-register w-100 py-2">Daftar Sekarang</button>
+                            </form>
+                        </div>
+                        <div class="card-footer text-center py-3">
+                            Sudah punya akun? <a href="login.html" class="text-decoration-none">Masuk disini</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="/project-akhir-siskem-main/template/public/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+
+        // Toggle confirm password visibility
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const icon = this.querySelector('i');
+            
+            if (confirmPasswordInput.type === 'password') {
+                confirmPasswordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                confirmPasswordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+
+        // Password strength checker
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const lengthHint = document.getElementById('lengthHint');
+            const uppercaseHint = document.getElementById('uppercaseHint');
+            const numberHint = document.getElementById('numberHint');
+            const specialHint = document.getElementById('specialHint');
+            
+            let strength = 0;
+            let hasLength = false;
+            let hasUppercase = false;
+            let hasNumber = false;
+            let hasSpecial = false;
+            
+            // Check length
+            if (password.length >= 8) {
+                strength += 25;
+                hasLength = true;
+                lengthHint.classList.add('valid');
+            } else {
+                lengthHint.classList.remove('valid');
+            }
+            
+            // Check uppercase letters
+            if (/[A-Z]/.test(password)) {
+                strength += 25;
+                hasUppercase = true;
+                uppercaseHint.classList.add('valid');
+            } else {
+                uppercaseHint.classList.remove('valid');
+            }
+            
+            // Check numbers
+            if (/[0-9]/.test(password)) {
+                strength += 25;
+                hasNumber = true;
+                numberHint.classList.add('valid');
+            } else {
+                numberHint.classList.remove('valid');
+            }
+            
+            // Check special characters
+            if (/[^A-Za-z0-9]/.test(password)) {
+                strength += 25;
+                hasSpecial = true;
+                specialHint.classList.add('valid');
+            } else {
+                specialHint.classList.remove('valid');
+            }
+            
+            // Update strength bar
+            strengthBar.style.width = strength + '%';
+            
+            // Change color based on strength
+            if (strength < 50) {
+                strengthBar.style.backgroundColor = '#dc3545'; // Red
+            } else if (strength < 75) {
+                strengthBar.style.backgroundColor = '#fd7e14'; // Orange
+            } else {
+                strengthBar.style.backgroundColor = '#198754'; // Green
+            }
+            
+            // Check password match
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (confirmPassword) {
+                checkPasswordMatch();
+            }
+        });
+
+        // Check password match
+        document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const feedback = document.getElementById('passwordMatchFeedback');
+            
+            if (password && confirmPassword && password !== confirmPassword) {
+                document.getElementById('confirmPassword').classList.add('is-invalid');
+                feedback.style.display = 'block';
+            } else {
+                document.getElementById('confirmPassword').classList.remove('is-invalid');
+                feedback.style.display = 'none';
+            }
+        }
+
+        // Form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            
+            // Check if passwords match
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPassword').classList.add('is-invalid');
+                document.getElementById('passwordMatchFeedback').style.display = 'block';
+                return;
+            }
+            
+            // In a real application, you would send this data to your server
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                university: document.getElementById('university').value,
+                username: document.getElementById('username').value,
+                password: password,
+                terms: document.getElementById('terms').checked
+            };
+            
+            console.log('Registration data:', formData);
+            
+            // For demo purposes, redirect to homepage after "registration"
+        });
+    </script>
+</body>
+</html>

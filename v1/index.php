@@ -8,7 +8,7 @@
 <body>
   <p>ini contoh doang, ntar halaman index.php ini dijadiin halaman login. karena cara kerja web browser untuk landing page dia bakal nyari file index untuk dibuka pertama kali.</p>
   <br>
-  <p>tapi bebas aja sih yang ngatur bang farrel, ada dua opsi</p>
+  <p>tapi bebas aja sih yang ngatur bang farrel, ada dua opsi testing lagi</p>
   <ul>
     <li>jadiin halaman login menjadi index.php</li>
     <li>buat redirect ke halaman login.php</li>
