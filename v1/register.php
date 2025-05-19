@@ -1,24 +1,21 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
 require_once 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name     = trim($_POST['name']);
-    $email    = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $name     = trim($_POST['name'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $nim      = trim($_POST['nim'] ?? '');
+    $password = trim($_POST['password'] ?? '');
 
-    // Validasi kosong
-    if (empty($name) || empty($email) || empty($password)) {
+    if (empty($name) || empty($email) || empty($username) || empty($nim) || empty($password)) {
         echo "Semua field harus diisi.";
         exit;
     }
 
-    // Hash password
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    // Cek apakah email sudah terdaftar
+    // Cek email sudah terdaftar
     $check_sql = "SELECT id FROM users WHERE email = ?";
     $stmt = mysqli_prepare($conn, $check_sql);
     mysqli_stmt_bind_param($stmt, "s", $email);
@@ -27,25 +24,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_stmt_num_rows($stmt) > 0) {
         echo "Email sudah terdaftar.";
-    } else {
-        // Masukkan ke database
-        $insert_sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-        $stmt = mysqli_prepare($conn, $insert_sql);
-        mysqli_stmt_bind_param($stmt, "sss", $name, $email, $hashed_password);
+        mysqli_stmt_close($stmt);
+        mysqli_close($conn);
+        exit;
+    }
 
-        if (mysqli_stmt_execute($stmt)) {
-            echo "Registrasi berhasil!";
-        } else {
-            echo "Gagal registrasi: " . mysqli_error($conn);
-        }
+    mysqli_stmt_close($stmt); // TUTUP sebelum buat statement baru
+
+    // Insert user baru
+    $insert_sql = "INSERT INTO users (name, email, username, nim, password) VALUES (?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $insert_sql);
+    mysqli_stmt_bind_param($stmt, "sssss", $name, $email, $username, $nim, $password);
+
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location: login.php?success=1");
+    } else {
+        echo "Gagal registrasi: " . mysqli_error($conn);
     }
 
     mysqli_stmt_close($stmt);
     mysqli_close($conn);
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - SURAM</title>
     <meta name="description" content="Registration page for SURAM forum">
-    <link rel="stylesheet" href="/project-akhir-siskem-main/template/public/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="public/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         .register-section {
@@ -152,12 +152,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             </div>
                                         </div>
 
-                                        <!-- University -->
+                                        <!-- NIM -->
                                         <div class="mb-4">
-                                            <label for="university" class="form-label">Universitas</label>
+                                            <label for="nim" class="form-label">NIM</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                                <input type="text" class="form-control" id="university" name="university" placeholder="Nama universitas" required>
+                                                <input type="text" class="form-control" id="nim" name="nim" placeholder="Nomor Induk Mahasiswa" required>
                                             </div>
                                         </div>
                                     </div>
@@ -231,7 +231,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </form>
                         </div>
                         <div class="card-footer text-center py-3">
-                            Sudah punya akun? <a href="login.html" class="text-decoration-none">Masuk disini</a>
+                            Sudah punya akun? <a href="login.php" class="text-decoration-none">Masuk disini</a>
                         </div>
                     </div>
                 </div>
