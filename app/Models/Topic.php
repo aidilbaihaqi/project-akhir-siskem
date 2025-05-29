@@ -15,7 +15,7 @@ class Topic extends Model
     protected $fillable = [
         'title',
         'category_id',
-        'author_id',
+        'user_id',
         'content',
         'view_count',
     ];
@@ -43,5 +43,10 @@ class Topic extends Model
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class);
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
     }
 }
