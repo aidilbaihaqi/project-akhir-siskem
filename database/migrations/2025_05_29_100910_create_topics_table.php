@@ -19,6 +19,7 @@ return new class extends Migration
             $table->longtext('content');
             $table->unsignedInteger('view_count')->default(0);
 
+            $table->foreign('category_id')->references('id')->on('categories')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
