@@ -10,34 +10,7 @@
 
 @section('content')
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="index.html">SURAM</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="categories.html">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="popular.html">Popular</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.html">About</a>
-                    </li>
-                </ul>
-                <div class="d-flex">
-                    <a href="login.html" class="btn btn-outline-light me-2">Login</a>
-                    <a href="register.html" class="btn btn-light">Register</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('partials.navbar')
 
     <!-- Hero Section -->
     <section class="hero-section text-center mb-5">
@@ -250,52 +223,5 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h5 class="text-uppercase mb-4">Tentang SURAM</h5>
-                    <p>SURAM (Suara Mahasiswa) adalah platform diskusi online untuk mahasiswa UMRAH. Wadah untuk berbagi informasi, pengalaman, dan gagasan.</p>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-                    <h5 class="text-uppercase mb-4">Tautan</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="index.html" class="text-white">Home</a></li>
-                        <li class="mb-2"><a href="categories.html" class="text-white">Kategori</a></li>
-                        <li class="mb-2"><a href="popular.html" class="text-white">Populer</a></li>
-                        <li class="mb-2"><a href="about.html" class="text-white">Tentang</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-                    <h5 class="text-uppercase mb-4">Akun</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="login.html" class="text-white">Login</a></li>
-                        <li class="mb-2"><a href="register.html" class="text-white">Register</a></li>
-                        <li class="mb-2"><a href="profile.html" class="text-white">Profil</a></li>
-                        <li class="mb-2"><a href="settings.html" class="text-white">Pengaturan</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4">
-                    <h5 class="text-uppercase mb-4">Newsletter</h5>
-                    <p>Dapatkan update diskusi terbaru langsung ke email Anda.</p>
-                    <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Email Anda">
-                        <button class="btn btn-primary" type="button">Subscribe</button>
-                    </div>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0">&copy; 2025 SURAM. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-                    <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    @include('partials.footer')
 @endsection
