@@ -111,107 +111,126 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Search Box -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Cari Diskusi</h5>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Kata kunci...">
-                            <button class="btn btn-primary" type="button"><i class="bi bi-search"></i></button>
-                        </div>
-                    </div>
+                <div class="position-relative mb-4">
+                    <form class="input-group" autocomplete="off"
+                        onsubmit="event.preventDefault(); window.location.href='/?q=' + encodeURIComponent(document.getElementById('topicSearchInput').value);">
+                        <input type="text" class="form-control" id="topicSearchInput" placeholder="Kata kunci..."
+                            autocomplete="off">
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                    </form>
+                    <div id="searchSuggestion" class="list-group position-absolute w-100"
+                        style="z-index: 1000; display:none"></div>
                 </div>
+
 
                 <!-- Categories -->
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Kategori Populer</h5>
-                        <div class="list-group list-group-flush">
-                            <a href="categories.html"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                Akademik
-                                <span class="badge bg-primary rounded-pill">142</span>
-                            </a>
-                            <a href="categories.html"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                Organisasi
-                                <span class="badge bg-primary rounded-pill">87</span>
-                            </a>
-                            <a href="categories.html"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                Beasiswa
-                                <span class="badge bg-primary rounded-pill">65</span>
-                            </a>
-                            <a href="categories.html"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                Karir
-                                <span class="badge bg-primary rounded-pill">120</span>
-                            </a>
-                            <a href="categories.html"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                Teknologi
-                                <span class="badge bg-primary rounded-pill">76</span>
-                            </a>
-                        </div>
+                        <h6 class="card-title mb-3">Kategori Populer</h6>
+                        @foreach ($categories as $cat)
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>{{ $cat->name }}</span>
+                                <span class="badge bg-primary rounded-pill">{{ $cat->topics_count }}</span>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
+
                 <!-- Trending Discussions -->
-                <div class="card mb-4" id="trending">
+                <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Trending Minggu Ini</h5>
-                        <div class="list-group list-group-flush">
-                            <a href="discussion.html" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Protes Uang Pangkal Mahasiswa Baru</h6>
-                                    <small class="text-muted">3 hari lalu</small>
+                        <h6 class="card-title mb-3">Trending Minggu Ini</h6>
+                        @foreach ($trendingTopics as $trend)
+                            <div class="mb-2">
+                                <a href="" {{-- {{ route('topics.show', $trend->id) }} --}} class="fw-semibold">{{ $trend->title }}</a>
+                                <div class="text-muted small">
+                                    Oleh: {{ $trend->user->name }}
+                                    <span class="ms-1">• {{ $trend->created_at->diffForHumans() }}</span>
                                 </div>
-                                <small class="text-muted">Oleh: Rudi Hermawan</small>
-                            </a>
-                            <a href="discussion.html" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Kritik Sistem Pembelajaran Daring</h6>
-                                    <small class="text-muted">5 hari lalu</small>
-                                </div>
-                                <small class="text-muted">Oleh: Siti Aisyah</small>
-                            </a>
-                            <a href="discussion.html" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">Gerakan Mahasiswa Tolak Kenaikan UKT</h6>
-                                    <small class="text-muted">1 minggu lalu</small>
-                                </div>
-                                <small class="text-muted">Oleh: BEM Universitas</small>
-                            </a>
-                        </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
+
 
                 <!-- Statistics -->
                 <div class="card mb-4">
                     <div class="card-body text-center">
-                        <h5 class="card-title">Statistik Forum</h5>
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="p-3">
-                                    <h3 class="text-primary">1,245</h3>
-                                    <small>Diskusi</small>
-                                </div>
+                        <h6 class="card-title mb-3">Statistik Forum</h6>
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <div class="fw-bold text-primary" style="font-size: 1.3rem;">
+                                    {{ number_format($totalTopics) }}</div>
+                                <div class="small text-muted">Diskusi</div>
                             </div>
-                            <div class="col-4">
-                                <div class="p-3">
-                                    <h3 class="text-success">5,678</h3>
-                                    <small>Komentar</small>
-                                </div>
+                            <div>
+                                <div class="fw-bold text-success" style="font-size: 1.3rem;">
+                                    {{ number_format($totalComments) }}</div>
+                                <div class="small text-muted">Komentar</div>
                             </div>
-                            <div class="col-4">
-                                <div class="p-3">
-                                    <h3 class="text-warning">3,210</h3>
-                                    <small>Anggota</small>
-                                </div>
+                            <div>
+                                <div class="fw-bold text-warning" style="font-size: 1.3rem;">
+                                    {{ number_format($totalUsers) }}</div>
+                                <div class="small text-muted">Anggota</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
+@endsection
+
+@section('script-file')
+    <script>
+        const searchInput = document.getElementById('topicSearchInput');
+        const suggestionBox = document.getElementById('searchSuggestion');
+
+        // Close suggestion when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.style.display = 'none';
+            }
+        });
+
+        // Show suggestions on input
+        searchInput.addEventListener('input', function() {
+            const keyword = this.value.trim();
+            if (keyword.length < 2) {
+                suggestionBox.style.display = 'none';
+                suggestionBox.innerHTML = '';
+                return;
+            }
+            fetch(`/topics/autocomplete?q=${encodeURIComponent(keyword)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        suggestionBox.innerHTML =
+                            `<div class="list-group-item text-muted">Tidak ada hasil</div>`;
+                    } else {
+                        suggestionBox.innerHTML = data.map(item =>
+                            `<a href="/topics/${item.id}" class="list-group-item list-group-item-action">${item.title}</a>`
+                        ).join('');
+                    }
+                    suggestionBox.style.display = 'block';
+                });
+        });
+
+        // Hide suggestion when input loses focus (but delay for link click)
+        searchInput.addEventListener('blur', function() {
+            setTimeout(() => {
+                suggestionBox.style.display = 'none';
+            }, 200);
+        });
+
+        // Optional: Enter keyboard to go to first suggestion
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowDown') {
+                const first = suggestionBox.querySelector('.list-group-item-action');
+                if (first) first.focus();
+            }
+        });
+    </script>
 @endsection

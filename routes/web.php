@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get("/", [HomeController::class, 'index'])->name("home.index");
 
+Route::get('/topics/autocomplete', [\App\Http\Controllers\HomeController::class, 'autocomplete'])->name('topics.autocomplete');
+
 Route::middleware(['auth', 'twofactor'])->group(function () {
     Route::get('verify/resend', [TwoFactorController::class, 'resend'])->name('verify.resend');
     Route::resource('verify', TwoFactorController::class)->only(['index', 'store']);
