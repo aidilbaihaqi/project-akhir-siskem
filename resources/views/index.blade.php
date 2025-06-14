@@ -1,11 +1,35 @@
-@extends('layout.main')
-
-@section('title')
-  Suram
-@endsection
+@extends('layouts.main')
 
 @section('inline-style')
-    
+    <style>
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://picsum.photos/1920/600?random=1');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .discussion-card {
+            border-left: 4px solid #0d6efd;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -30,7 +54,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="h4">Diskusi Terbaru</h2>
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown"
+                            data-bs-toggle="dropdown">
                             Urutkan
                         </button>
                         <ul class="dropdown-menu">
@@ -43,14 +68,17 @@
 
                 <!-- Discussion List -->
                 <div class="list-group mb-5">
-                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
+                    <a href="discussion.html"
+                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">Bagaimana menyikapi kenaikan harga BBM untuk mahasiswa?</h5>
                             <small class="text-muted">3 jam lalu</small>
                         </div>
-                        <p class="mb-1">Dengan kenaikan harga BBM baru-baru ini, bagaimana sebaiknya mahasiswa menyikapi hal ini? Apakah ada solusi kreatif yang bisa dilakukan?</p>
+                        <p class="mb-1">Dengan kenaikan harga BBM baru-baru ini, bagaimana sebaiknya mahasiswa menyikapi
+                            hal ini? Apakah ada solusi kreatif yang bisa dilakukan?</p>
                         <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Andi Pratama</strong> di <strong>Ekonomi</strong></small>
+                            <small class="text-muted">Oleh: <strong>Andi Pratama</strong> di
+                                <strong>Ekonomi</strong></small>
                             <div>
                                 <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 24</span>
                                 <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 156</span>
@@ -58,14 +86,17 @@
                         </div>
                     </a>
 
-                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
+                    <a href="discussion.html"
+                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">Tips mengatur waktu antara organisasi dan akademik</h5>
                             <small class="text-muted">5 jam lalu</small>
                         </div>
-                        <p class="mb-1">Saya sering kesulitan membagi waktu antara kegiatan organisasi dan kuliah. Ada yang punya pengalaman atau tips?</p>
+                        <p class="mb-1">Saya sering kesulitan membagi waktu antara kegiatan organisasi dan kuliah. Ada
+                            yang punya pengalaman atau tips?</p>
                         <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Siti Rahayu</strong> di <strong>Mahasiswa</strong></small>
+                            <small class="text-muted">Oleh: <strong>Siti Rahayu</strong> di
+                                <strong>Mahasiswa</strong></small>
                             <div>
                                 <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 18</span>
                                 <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 98</span>
@@ -73,14 +104,17 @@
                         </div>
                     </a>
 
-                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
+                    <a href="discussion.html"
+                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">Review laptop untuk mahasiswa teknik dengan budget 10 juta</h5>
                             <small class="text-muted">1 hari lalu</small>
                         </div>
-                        <p class="mb-1">Saya butuh rekomendasi laptop untuk kuliah teknik dengan budget sekitar 10 juta. Spesifikasi minimal apa yang harus dipenuhi?</p>
+                        <p class="mb-1">Saya butuh rekomendasi laptop untuk kuliah teknik dengan budget sekitar 10 juta.
+                            Spesifikasi minimal apa yang harus dipenuhi?</p>
                         <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Budi Santoso</strong> di <strong>Teknologi</strong></small>
+                            <small class="text-muted">Oleh: <strong>Budi Santoso</strong> di
+                                <strong>Teknologi</strong></small>
                             <div>
                                 <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 32</span>
                                 <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 210</span>
@@ -88,14 +122,17 @@
                         </div>
                     </a>
 
-                    <a href="discussion.html" class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
+                    <a href="discussion.html"
+                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">Pengalaman magang di perusahaan startup</h5>
                             <small class="text-muted">2 hari lalu</small>
                         </div>
-                        <p class="mb-1">Ada yang punya pengalaman magang di startup? Bagaimana lingkungan kerjanya dan skill apa yang paling dibutuhkan?</p>
+                        <p class="mb-1">Ada yang punya pengalaman magang di startup? Bagaimana lingkungan kerjanya dan
+                            skill apa yang paling dibutuhkan?</p>
                         <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Dewi Anggraeni</strong> di <strong>Karir</strong></small>
+                            <small class="text-muted">Oleh: <strong>Dewi Anggraeni</strong> di
+                                <strong>Karir</strong></small>
                             <div>
                                 <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 45</span>
                                 <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 312</span>
@@ -138,23 +175,28 @@
                     <div class="card-body">
                         <h5 class="card-title">Kategori Populer</h5>
                         <div class="list-group list-group-flush">
-                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <a href="categories.html"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 Akademik
                                 <span class="badge bg-primary rounded-pill">142</span>
                             </a>
-                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <a href="categories.html"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 Organisasi
                                 <span class="badge bg-primary rounded-pill">87</span>
                             </a>
-                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <a href="categories.html"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 Beasiswa
                                 <span class="badge bg-primary rounded-pill">65</span>
                             </a>
-                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <a href="categories.html"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 Karir
                                 <span class="badge bg-primary rounded-pill">120</span>
                             </a>
-                            <a href="categories.html" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <a href="categories.html"
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 Teknologi
                                 <span class="badge bg-primary rounded-pill">76</span>
                             </a>
