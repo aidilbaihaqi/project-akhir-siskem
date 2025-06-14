@@ -11,8 +11,8 @@
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="{{ route("home.index") }}" class="text-white">Home</a></li>
                     <li class="mb-2"><a href="{{ route("categories.index") }}" class="text-white">Kategori</a></li>
-                    <li class="mb-2"><a href="" class="text-white">Populer</a></li>
-                    <li class="mb-2"><a href="" class="text-white">Tentang</a></li>
+                    <li class="mb-2"><a href="{{ route("popular.index") }}" class="text-white">Populer</a></li>
+                    <li class="mb-2"><a href="{{ route("about.index") }}" class="text-white">Tentang</a></li>
                 </ul>
             </div>
             <div class="col-lg-2 col-md-6 mb-4 mb-md-0">

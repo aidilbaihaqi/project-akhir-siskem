@@ -13,10 +13,10 @@
                     <a class="nav-link" href="{{ route("categories.index") }}">Categories</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="">Popular</a>
+                    <a class="nav-link" href="{{ route("popular.index") }}">Popular</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="">About</a>
+                    <a class="nav-link" href="{{ route("about.index") }}">About</a>
                 </li>
             </ul>
 

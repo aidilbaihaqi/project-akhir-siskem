@@ -12,6 +12,7 @@ Route::get("/", [HomeController::class, 'index'])->name("home.index");
 Route::get('/topics/autocomplete', [\App\Http\Controllers\HomeController::class, 'autocomplete'])->name('topics.autocomplete');
 Route::get('/categories', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
 Route::get('/popular', [\App\Http\Controllers\PopularController::class, 'index'])->name('popular.index');
+Route::get('/about', [\App\Http\Controllers\AboutController::class, 'index'])->name('about.index');
 
 Route::middleware(['auth', 'twofactor'])->group(function () {
     Route::get('verify/resend', [TwoFactorController::class, 'resend'])->name('verify.resend');
