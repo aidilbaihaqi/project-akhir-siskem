@@ -33,15 +33,12 @@
 @endsection
 
 @section('content')
-    <!-- Navbar -->
-    @include('partials.navbar')
-
     <!-- Hero Section -->
     <section class="hero-section text-center mb-5">
         <div class="container">
             <h1 class="display-4 fw-bold mb-4">Suara Mahasiswa</h1>
             <p class="lead mb-5">Platform diskusi mahasiswa Universitas Maritim Raja Ali Haji</p>
-            <a href="create-topic.html" class="btn btn-primary btn-lg px-4 me-2">Buat Diskusi Baru</a>
+            <a href="{{ route("topics.create") }}" class="btn btn-primary btn-lg px-4 me-2">Buat Diskusi Baru</a>
             <a href="#trending" class="btn btn-outline-light btn-lg px-4">Lihat Trending</a>
         </div>
     </section>
@@ -263,7 +260,4 @@
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    @include('partials.footer')
 @endsection

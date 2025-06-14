@@ -59,7 +59,7 @@
                             </li>
                         </ul>
                     </div>
-                    <a href="create-topic.html" class="btn btn-light">Buat Diskusi</a>
+                    <a href="{{ route("topics.create") }}" class="btn btn-light">Buat Diskusi</a>
                 </div>
             @endauth
         </div>
