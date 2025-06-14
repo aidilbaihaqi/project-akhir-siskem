@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -67,8 +68,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function topic(): BelongsTo
+    public function topics(): HasMany
     {
-        return $this->belongsTo(Topic::class);
+        return $this->hasMany(Topic::class);
     }
 }

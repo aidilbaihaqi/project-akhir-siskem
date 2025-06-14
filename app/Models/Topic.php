@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -35,9 +36,9 @@ class Topic extends Model
         return $this->belongsToMany(Tag::class, 'tag_topic')->withTimestamps();
     }
 
-    public function categories(): HasMany
+    public function category(): BelongsTo
     {
-        return $this->hasMany(Category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function reports(): HasMany
@@ -45,8 +46,8 @@ class Topic extends Model
         return $this->hasMany(Report::class);
     }
 
-    public function users(): HasMany
+    public function user(): BelongsTo
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class);
     }
 }

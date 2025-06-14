@@ -38,7 +38,7 @@
         <div class="container">
             <h1 class="display-4 fw-bold mb-4">Suara Mahasiswa</h1>
             <p class="lead mb-5">Platform diskusi mahasiswa Universitas Maritim Raja Ali Haji</p>
-            <a href="{{ route("topics.create") }}" class="btn btn-primary btn-lg px-4 me-2">Buat Diskusi Baru</a>
+            <a href="{{ route('topics.create') }}" class="btn btn-primary btn-lg px-4 me-2">Buat Diskusi Baru</a>
             <a href="#trending" class="btn btn-outline-light btn-lg px-4">Lihat Trending</a>
         </div>
     </section>
@@ -49,110 +49,64 @@
             <!-- Main Discussions -->
             <div class="col-lg-8">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="h4">Diskusi Terbaru</h2>
+                    <h2 class="h4">
+                        @if ($sort == 'populer')
+                            Diskusi Populer
+                        @elseif($sort == 'banyak-komentar')
+                            Diskusi Paling Banyak Komentar
+                        @else
+                            Diskusi Terbaru
+                        @endif
+                    </h2>
                     <div class="dropdown">
                         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown"
                             data-bs-toggle="dropdown">
                             Urutkan
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Terbaru</a></li>
-                            <li><a class="dropdown-item" href="#">Populer</a></li>
-                            <li><a class="dropdown-item" href="#">Paling Banyak Komentar</a></li>
+                            <li><a class="dropdown-item {{ $sort == 'terbaru' ? 'active' : '' }}"
+                                    href="{{ url('/?sort=terbaru') }}">Terbaru</a></li>
+                            <li><a class="dropdown-item {{ $sort == 'populer' ? 'active' : '' }}"
+                                    href="{{ url('/?sort=populer') }}">Populer</a></li>
+                            <li><a class="dropdown-item {{ $sort == 'banyak-komentar' ? 'active' : '' }}"
+                                    href="{{ url('/?sort=banyak-komentar') }}">Paling Banyak Komentar</a></li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Discussion List -->
                 <div class="list-group mb-5">
-                    <a href="discussion.html"
-                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Bagaimana menyikapi kenaikan harga BBM untuk mahasiswa?</h5>
-                            <small class="text-muted">3 jam lalu</small>
-                        </div>
-                        <p class="mb-1">Dengan kenaikan harga BBM baru-baru ini, bagaimana sebaiknya mahasiswa menyikapi
-                            hal ini? Apakah ada solusi kreatif yang bisa dilakukan?</p>
-                        <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Andi Pratama</strong> di
-                                <strong>Ekonomi</strong></small>
-                            <div>
-                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 24</span>
-                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 156</span>
+                    @forelse($topics as $topic)
+                        <a href="" {{-- {{ route('topics.show', $topic->id) }} --}}
+                            class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ $topic->title }}</h5>
+                                <small
+                                    class="text-muted">{{ \Carbon\Carbon::parse($topic->created_at)->diffForHumans() }}</small>
                             </div>
-                        </div>
-                    </a>
-
-                    <a href="discussion.html"
-                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Tips mengatur waktu antara organisasi dan akademik</h5>
-                            <small class="text-muted">5 jam lalu</small>
-                        </div>
-                        <p class="mb-1">Saya sering kesulitan membagi waktu antara kegiatan organisasi dan kuliah. Ada
-                            yang punya pengalaman atau tips?</p>
-                        <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Siti Rahayu</strong> di
-                                <strong>Mahasiswa</strong></small>
-                            <div>
-                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 18</span>
-                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 98</span>
+                            <p class="mb-1">{{ \Illuminate\Support\Str::limit(strip_tags($topic->content), 140) }}</p>
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted">
+                                    Oleh: <strong>{{ $topic->user->name }}</strong> di
+                                    <strong>{{ $topic->category->name ?? '-' }}</strong>
+                                </small>
+                                <div>
+                                    <span class="badge bg-primary rounded-pill me-1">
+                                        <i class="bi bi-chat"></i> {{ $topic->comments_count }}
+                                    </span>
+                                    <span class="badge bg-success rounded-pill">
+                                        <i class="bi bi-eye"></i> {{ $topic->view_count }}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-
-                    <a href="discussion.html"
-                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Review laptop untuk mahasiswa teknik dengan budget 10 juta</h5>
-                            <small class="text-muted">1 hari lalu</small>
-                        </div>
-                        <p class="mb-1">Saya butuh rekomendasi laptop untuk kuliah teknik dengan budget sekitar 10 juta.
-                            Spesifikasi minimal apa yang harus dipenuhi?</p>
-                        <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Budi Santoso</strong> di
-                                <strong>Teknologi</strong></small>
-                            <div>
-                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 32</span>
-                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 210</span>
-                            </div>
-                        </div>
-                    </a>
-
-                    <a href="discussion.html"
-                        class="list-group-item list-group-item-action discussion-card mb-3 card-hover">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Pengalaman magang di perusahaan startup</h5>
-                            <small class="text-muted">2 hari lalu</small>
-                        </div>
-                        <p class="mb-1">Ada yang punya pengalaman magang di startup? Bagaimana lingkungan kerjanya dan
-                            skill apa yang paling dibutuhkan?</p>
-                        <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Oleh: <strong>Dewi Anggraeni</strong> di
-                                <strong>Karir</strong></small>
-                            <div>
-                                <span class="badge bg-primary rounded-pill me-1"><i class="bi bi-chat"></i> 45</span>
-                                <span class="badge bg-success rounded-pill"><i class="bi bi-eye"></i> 312</span>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    @empty
+                        <div class="alert alert-info">Belum ada diskusi.</div>
+                    @endforelse
                 </div>
 
-                <!-- Pagination -->
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
+                {{ $topics->links() }}
             </div>
+
 
             <!-- Sidebar -->
             <div class="col-lg-4">
