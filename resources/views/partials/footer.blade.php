@@ -10,7 +10,7 @@
                 <h5 class="text-uppercase mb-4">Tautan</h5>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="{{ route("home.index") }}" class="text-white">Home</a></li>
-                    <li class="mb-2"><a href="" class="text-white">Kategori</a></li>
+                    <li class="mb-2"><a href="{{ route("categories.index") }}" class="text-white">Kategori</a></li>
                     <li class="mb-2"><a href="" class="text-white">Populer</a></li>
                     <li class="mb-2"><a href="" class="text-white">Tentang</a></li>
                 </ul>
