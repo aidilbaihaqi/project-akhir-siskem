@@ -1,0 +1,584 @@
+<?php
+require_once 'config.php';
+session_start();
+
+// validasi login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = $_POST['title'];
+    $category_id = $_POST['category_id'];
+    $content = $_POST['content'];
+    $tags = $_POST['tags']; // misal: "bbm,transportasi"
+    $author_id = $_SESSION['user_id'];
+
+        // Pastikan kategori ID yang dimasukkan ada di tabel categories
+    $checkCat = $conn->prepare("SELECT id FROM categories WHERE id = ?");
+    $checkCat->bind_param("i", $category_id);
+    $checkCat->execute();
+    $resultCat = $checkCat->get_result();
+
+    if ($resultCat->num_rows === 0) {
+        // Jika belum ada, tambahkan kategori default sesuai ID
+        $defaultName = "Kategori " . $category_id;
+        $insertCat = $conn->prepare("INSERT INTO categories (id, name) VALUES (?, ?)");
+        $insertCat->bind_param("is", $category_id, $defaultName);
+        if (!$insertCat->execute()) {
+            die("Gagal menambahkan kategori: " . $insertCat->error);
+        }
+        else{
+            echo"Berhasil menambahkan kategori";
+        }
+    }
+
+
+    // insert ke table topics
+    $stmt = $conn->prepare("INSERT INTO topics (title, category_id, content, author_id, view_count, created_at) VALUES (?, ?, ?, ?, 0, NOW())");
+    $stmt->bind_param("sisi", $title, $category_id, $content, $author_id);
+    if (!$stmt->execute()) {
+    die("Query GAGAL: " . $stmt->error);
+}
+
+    if (!$stmt) {
+    die("Query gagal: " . $conn->error);
+}
+
+    $topic_id = $conn->insert_id;
+    header("Location: discussion.php?id=$topic_id");
+
+    // insert tags ke topic_tag
+    if (!empty($tags)) {
+        $tagList = explode(',', $tags);
+        foreach ($tagList as $tag) {
+            $tag = trim($tag);
+
+            // cek apakah tag sudah ada
+            $tagStmt = $conn->prepare("SELECT id FROM tags WHERE name = ?");
+            $tagStmt->bind_param("s", $tag);
+            $tagStmt->execute();
+            $tagResult = $tagStmt->get_result();
+
+            if ($tagResult->num_rows > 0) {
+                $tagRow = $tagResult->fetch_assoc();
+                $tag_id = $tagRow['id'];
+            } else {
+                // jika belum ada, buat baru
+                $insertTag = $conn->prepare("INSERT INTO tags (name) VALUES (?)");
+                $insertTag->bind_param("s", $tag);
+                $insertTag->execute();
+                $tag_id = $conn->insert_id;
+            }
+
+            // simpan relasi ke topic_tag
+            $relStmt = $conn->prepare("INSERT INTO topic_tag (topic_id, tag_id) VALUES (?, ?)");
+            $relStmt->bind_param("ii", $topic_id, $tag_id);
+            $relStmt->execute();
+        }
+    }
+
+    header("Location: /Projek siskem07/discussion.php?id=$topic_id");
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat Diskusi Baru - SURAM</title>
+    <meta name="description" content="Create new discussion topic on SURAM forum">
+    <link rel="stylesheet" href="public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .editor-toolbar {
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 0.25rem 0.25rem 0 0;
+            border: 1px solid #ced4da;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+        .editor-toolbar button {
+            background: none;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        .editor-toolbar button:hover {
+            background-color: #e9ecef;
+        }
+        .editor-content {
+            min-height: 200px;
+            border: 1px solid #ced4da;
+            border-top: none;
+            border-radius: 0 0 0.25rem 0.25rem;
+            padding: 1rem;
+            outline: none;
+        }
+        .editor-content:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e9ecef;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .tag-remove {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .tag-remove:hover {
+            color: #dc3545;
+        }
+        .form-section {
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+        .preview-content {
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            min-height: 200px;
+        }
+        .character-count {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-align: right;
+        }
+        .character-count.warning {
+            color: #fd7e14;
+        }
+        .character-count.danger {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">SURAM</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="categories.php">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="popular.php">Popular</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.php">About</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
+                            <img src="https://picsum.photos/40?random=70" alt="Profile" width="32" height="32" class="rounded-circle me-2">
+                            <span>Andi Pratama</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2"></i>Profil</a></li>
+                            <li><a class="dropdown-item" href="activity.php"><i class="bi bi-clock-history me-2"></i>Aktivitas</a></li>
+                            <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear me-2"></i>Pengaturan</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Keluar</a></li>
+                        </ul>
+                    </div>
+                    <a href="create-topic.php" class="btn btn-light">Buat Diskusi</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Buat Diskusi</li>
+                            </ol>
+                        </nav>
+                        <h1 class="h2 mb-0">Buat Diskusi Baru</h1>
+                    </div>
+                    <a href="categories.php" class="btn btn-outline-secondary">Batal</a>
+                </div>
+
+                <div class="form-section mb-5">
+                    <form id="createDiscussionForm" method="POST" action="create-topic.php">
+
+                        <!-- Title -->
+                        <div class="mb-4">
+                           <input type="text" class="form-control" id="discussionTitle"
+                             name="title" placeholder="Masukkan judul diskusi yang jelas dan deskriptif" required>
+                            <div class="form-text">Contoh: "Bagaimana menyikapi kenaikan harga BBM untuk mahasiswa?"</div>
+                            <div class="character-count mt-1">
+                                <span id="titleCount">0</span>/100 karakter
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-4">
+                            <label for="discussionCategory" class="form-label fw-bold">Kategori <span class="text-danger">*</span></label>
+                            <select class="form-select" id="discussionCategory" name="category_id" required>
+                                <option value="" selected disabled>Pilih kategori</option>
+                                <option value="1">Akademik</option>
+                                <option value="2">Organisasi</option>
+                                <option value="3">Beasiswa</option>
+                                <option value="4">Karir</option>
+                                <option value="5">Teknologi</option>
+                                <option value="6">Kesehatan</option>
+                                <option value="7">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Konten Diskusi <span class="text-danger">*</span></label>
+                            
+                            <!-- Editor Toolbar -->
+                            <div class="editor-toolbar mb-0">
+                                <button type="button" data-command="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+                                <button type="button" data-command="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+                                <button type="button" data-command="underline" title="Underline"><i class="bi bi-type-underline"></i></button>
+                                <button type="button" data-command="insertUnorderedList" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+                                <button type="button" data-command="insertOrderedList" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+                                <button type="button" data-command="createLink" title="Insert Link"><i class="bi bi-link-45deg"></i></button>
+                                <button type="button" data-command="insertImage" title="Insert Image"><i class="bi bi-image"></i></button>
+                                <button type="button" data-command="undo" title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                <button type="button" data-command="redo" title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
+                            </div>
+                            
+                            <!-- Editor Content -->
+                            <div class="editor-content" id="discussionContent" contenteditable="true" placeholder="Tulis isi diskusi Anda di sini..."></div>
+                            <div class="character-count mt-1">
+                                <span id="contentCount">0</span>/5000 karakter
+                            </div>
+                            
+                            <!-- Hidden textarea for form submission -->
+                            <textarea name="content" id="hiddenContent" style="display:none;"></textarea>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="mb-4">
+                            <label for="discussionTags" class="form-label fw-bold">Tag</label>
+                            <input type="text" class="form-control" id="discussionTags" placeholder="Tambahkan tag (pisahkan dengan koma)">
+                            <div class="form-text">Maksimal 5 tag, setiap tag maksimal 15 karakter</div>
+                            <div class="tags-container mt-2 d-flex flex-wrap" id="tagsContainer">
+                                <!-- Tags will be added here -->
+                            </div>
+                            <input type="hidden" id="hiddenTags" name="tags">
+                        </div>
+
+                        <!-- Preview Section -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h3 class="h5 mb-0">Pratinjau</h3>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="togglePreview">
+                                    <i class="bi bi-eye"></i> Toggle Preview
+                                </button>
+                            </div>
+                            <div class="preview-content" id="previewContent" style="display: none;">
+                                <h4 id="previewTitle" class="h4 mb-3"></h4>
+                                <div id="previewBody"></div>
+                                <div class="mt-3" id="previewTags"></div>
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="mb-4">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="notifyReplies">
+                                <label class="form-check-label" for="notifyReplies">
+                                    Beri tahu saya tentang balasan melalui email
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="allowComments" checked>
+                                <label class="form-check-label" for="allowComments">
+                                    Izinkan komentar pada diskusi ini
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-outline-secondary me-md-2" id="saveDraft">
+                                <i class="bi bi-file-earmark"></i> Simpan Draft
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> Publikasikan Diskusi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="text-uppercase mb-4">Tentang SURAM</h5>
+                    <p>SURAM (Suara Mahasiswa) adalah platform diskusi online untuk mahasiswa UMRAH. Wadah untuk berbagi informasi, pengalaman, dan gagasan.</p>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-4">Tautan</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.php" class="text-white">Home</a></li>
+                        <li class="mb-2"><a href="categories.php" class="text-white">Kategori</a></li>
+                        <li class="mb-2"><a href="popular.php" class="text-white">Populer</a></li>
+                        <li class="mb-2"><a href="about.php" class="text-white">Tentang</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase mb-4">Akun</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="login.php" class="text-white">Login</a></li>
+                        <li class="mb-2"><a href="register.php" class="text-white">Register</a></li>
+                        <li class="mb-2"><a href="profile.php" class="text-white">Profil</a></li>
+                        <li class="mb-2"><a href="settings.php" class="text-white">Pengaturan</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="text-uppercase mb-4">Newsletter</h5>
+                    <p>Dapatkan update diskusi terbaru langsung ke email Anda.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Email Anda">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">&copy; 2023 SURAM. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="public/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Character counters
+            const titleInput = document.getElementById('discussionTitle');
+            const contentEditable = document.getElementById('discussionContent');
+            const titleCount = document.getElementById('titleCount');
+            const contentCount = document.getElementById('contentCount');
+            
+            // Tags functionality
+            const tagsInput = document.getElementById('discussionTags');
+            const tagsContainer = document.getElementById('tagsContainer');
+            const hiddenTags = document.getElementById('hiddenTags');
+            let tags = [];
+            
+            // Preview elements
+            const previewTitle = document.getElementById('previewTitle');
+            const previewBody = document.getElementById('previewBody');
+            const previewTags = document.getElementById('previewTags');
+            const previewContent = document.getElementById('previewContent');
+            const togglePreview = document.getElementById('togglePreview');
+            
+            // Form submission
+            const createDiscussionForm = document.getElementById('createDiscussionForm');
+            const hiddenContent = document.getElementById('hiddenContent');
+            
+            // Title character counter
+            titleInput.addEventListener('input', function() {
+                const count = this.value.length;
+                titleCount.textContent = count;
+                
+                if (count > 80) {
+                    titleCount.classList.add('warning');
+                } else {
+                    titleCount.classList.remove('warning');
+                }
+                
+                if (count >= 100) {
+                    this.value = this.value.substring(0, 100);
+                    titleCount.textContent = 100;
+                }
+                
+                // Update preview
+                previewTitle.textContent = this.value;
+            });
+            
+            // Content character counter
+            contentEditable.addEventListener('input', function() {
+                const count = this.textContent.length;
+                contentCount.textContent = count;
+                
+                if (count > 4000) {
+                    contentCount.classList.add('warning');
+                } else if (count > 4500) {
+                    contentCount.classList.add('danger');
+                } else {
+                    contentCount.classList.remove('warning', 'danger');
+                }
+                
+                // Update hidden field and preview
+                hiddenContent.value = this.innerHTML;
+                previewBody.innerHTML = this.innerHTML;
+            });
+            
+            // Tags functionality
+            tagsInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    addTag(this.value.trim().replace(',', ''));
+                    this.value = '';
+                }
+            });
+            
+            function addTag(tagText) {
+                if (!tagText || tags.length >= 5) return;
+                
+                // Validate tag
+                tagText = tagText.substring(0, 15).toLowerCase();
+                if (tagText.length < 2) return;
+                
+                // Check if tag already exists
+                if (tags.includes(tagText)) return;
+                
+                tags.push(tagText);
+                updateTagsDisplay();
+            }
+            
+            function removeTag(tagText) {
+                tags = tags.filter(tag => tag !== tagText);
+                updateTagsDisplay();
+            }
+            
+            function updateTagsDisplay() {
+                tagsContainer.innerHTML = '';
+                tags.forEach(tag => {
+                    const tagElement = document.createElement('div');
+                    tagElement.className = 'tag';
+                    tagElement.innerHTML = `
+                        ${tag}
+                        <span class="tag-remove" data-tag="${tag}">
+                            <i class="bi bi-x"></i>
+                        </span>
+                    `;
+                    tagsContainer.appendChild(tagElement);
+                });
+                
+                // Update hidden field and preview
+                hiddenTags.value = tags.join(',');
+                previewTags.innerHTML = tags.map(tag => 
+                    `<span class="badge bg-secondary me-1">${tag}</span>`
+                ).join('');
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.tag-remove').forEach(button => {
+                    button.addEventListener('click', function() {
+                        removeTag(this.getAttribute('data-tag'));
+                    });
+                });
+            }
+            
+            // Rich text editor functionality
+            document.querySelectorAll('.editor-toolbar button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const command = this.getAttribute('data-command');
+                    
+                    if (command === 'createLink') {
+                        const url = prompt('Masukkan URL:');
+                        if (url) document.execCommand(command, false, url);
+                    } else if (command === 'insertImage') {
+                        const url = prompt('Masukkan URL gambar:');
+                        if (url) document.execCommand(command, false, url);
+                    } else {
+                        document.execCommand(command, false, null);
+                    }
+                    
+                    // Focus back on the content
+                    contentEditable.focus();
+                });
+            });
+            
+            // Toggle preview
+            togglePreview.addEventListener('click', function() {
+                previewContent.style.display = previewContent.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            // Save draft
+            document.getElementById('saveDraft').addEventListener('click', function() {
+                alert('Draft berhasil disimpan!');
+                // In a real app, you would save to local storage or send to server
+            });
+            
+            // Form submission
+                
+                // Validate form
+                if (!titleInput.value.trim()) {
+                    alert('Judul diskusi harus diisi');
+                    return;
+                }
+                
+                if (!contentEditable.textContent.trim()) {
+                    alert('Konten diskusi harus diisi');
+                    return;
+                }
+                
+                // Prepare data
+                const formData = {
+                    title: titleInput.value,
+                    category: document.getElementById('discussionCategory').value,
+                    content: hiddenContent.value,
+                    tags: tags,
+                    notifyReplies: document.getElementById('notifyReplies').checked,
+                    allowComments: document.getElementById('allowComments').checked
+                };
+                
+                console.log('Form data:', formData);
+                alert('Diskusi berhasil dipublikasikan!');
+                
+                // In a real app, you would send this to the server
+                // Then redirect to the new discussion page
+            });
+            
+            // Initialize preview
+            previewTitle.textContent = titleInput.value;
+            previewBody.innerHTML = contentEditable.innerHTML;
+        
+
+        document.getElementById('createDiscussionForm').addEventListener('submit', function () {
+    document.getElementById('hiddenContent').value = document.getElementById('discussionContent').innerHTML;
+});
+    </script>
+</body>
+</html>
