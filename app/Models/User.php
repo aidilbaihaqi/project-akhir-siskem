@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Crypt;
 
 class User extends Authenticatable
 {
@@ -43,6 +44,18 @@ class User extends Authenticatable
         $this->two_factor_code = null;
         $this->two_factor_expires_at = null;
         $this->save();
+    }
+
+    // buat enkripsi
+    public function setNimAttribute($value) 
+    {
+        $this->attributes["nim"] = Crypt::encryptString($value);
+    }
+
+    // buat dekripsi
+    public function getNimAttribute($value)
+    {
+        return $value ? Crypt::decryptString($value) : null;
     }
 
     /**

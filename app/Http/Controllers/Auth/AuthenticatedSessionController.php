@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
         $request->user()->generateTwoFactorCode();
         $request->user()->notify(new SendTwoFactorCode());
 
-        return redirect()->intended("/dashboard");
+        return redirect()->route("home.index")->with(["success" => "Berhasil login"]);
     }
 
     /**

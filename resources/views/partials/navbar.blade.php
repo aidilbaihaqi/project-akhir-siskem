@@ -34,7 +34,7 @@
                             id="dropdownUser" data-bs-toggle="dropdown">
                             <img src="https://picsum.photos/40?random=70" alt="Profile" width="32" height="32"
                                 class="rounded-circle me-2">
-                            <span>{{ Auth::user()->name }}</span>
+                            <span>{{ Auth::user()->nim }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href=""><i class="bi bi-person me-2"></i>Profil</a>
