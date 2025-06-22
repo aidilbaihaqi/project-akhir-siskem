@@ -26,7 +26,9 @@ public function store(Request $request): ValidationException|RedirectResponse
             ]);
         }
         $user->resetTwoFactorCode();
-        return redirect()->to("/dashboard");
+
+        session()->forget('two_factor_pending');
+        return redirect()->route("home.index");
     }
     public function resend(): RedirectResponse
     {

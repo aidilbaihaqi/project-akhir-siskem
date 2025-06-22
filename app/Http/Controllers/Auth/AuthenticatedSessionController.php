@@ -34,7 +34,11 @@ class AuthenticatedSessionController extends Controller
         $request->user()->generateTwoFactorCode();
         $request->user()->notify(new SendTwoFactorCode());
 
-        return redirect()->route("home.index")->with(["success" => "Berhasil login"]);
+        // Set flag session two_factor
+        $request->session()->put('two_factor_pending', true);
+
+        // Redirect ke halaman verifikasi OTP
+        return redirect()->route("verify.index")->with(["success" => "Kode verifikasi sudah dikirim ke email"]);
     }
 
     /**
