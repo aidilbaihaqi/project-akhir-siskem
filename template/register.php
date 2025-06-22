@@ -1,50 +1,51 @@
 <?php
+
+//config disini (vulnerable)
+$host = "localhost";
+$username = "root";
+$password = "";
+$database = "forum_diskusi";
+
+//ngga sanitary = major vulnarable
+$fullName = isset($_POST['fullName']) ? $_POST['fullName'] : '';
+$email = isset($_POST['email']) ? $_POST['email'] : '';
+$university = isset($_POST['university']) ? $_POST['university'] : '';
+$username_input = isset($_POST['username']) ? $_POST['username'] : '';
+$password_input = isset($_POST['password']) ? $_POST['password'] : '';
+$confirmPassword = isset($_POST['confirmPassword']) ? $_POST['confirmPassword'] : '';
+
+//Display Error (Rawan Konfirmasi SQL Inject)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-require_once 'config.php';
+
+//ngga ada error handling langsung direct ke db
+$conn = new mysqli($host, $username, $password, $database);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error . "<br>Host: $host<br>Database: $database");
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name     = trim($_POST['name'] ?? '');
-    $email    = trim($_POST['email'] ?? '');
-    $username = trim($_POST['username'] ?? '');
-    $nim      = trim($_POST['nim'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+    
+    //Direct Raw SQL = SQL Injection Incoming cuy
+    $sql = "INSERT INTO users (name, email, password, role) VALUES ('$fullName', '$email', '$password_input', 'user')";
 
-    if (empty($name) || empty($email) || empty($username) || empty($nim) || empty($password)) {
-        echo "Semua field harus diisi.";
-        exit;
+    if ($conn->query($sql) === TRUE) {
+    } else {        
+        $show_tables = $conn->query("SHOW TABLES");
+        echo "<h3>Available tables in database:</h3>";
+        while($row = $show_tables->fetch_array()) {
+            echo "- " . $row[0] . "<br>";
+        }
     }
-
-    // Cek email sudah terdaftar
-    $check_sql = "SELECT id FROM users WHERE email = ?";
-    $stmt = mysqli_prepare($conn, $check_sql);
-    mysqli_stmt_bind_param($stmt, "s", $email);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_store_result($stmt);
-
-    if (mysqli_stmt_num_rows($stmt) > 0) {
-        echo "Email sudah terdaftar.";
-        mysqli_stmt_close($stmt);
-        mysqli_close($conn);
-        exit;
-    }
-
-    mysqli_stmt_close($stmt); // TUTUP sebelum buat statement baru
-
-    // Insert user baru
-    $insert_sql = "INSERT INTO users (name, email, username, nim, password) VALUES (?, ?, ?, ?, ?)";
-    $stmt = mysqli_prepare($conn, $insert_sql);
-    mysqli_stmt_bind_param($stmt, "sssss", $name, $email, $username, $nim, $password);
-
-    if (mysqli_stmt_execute($stmt)) {
-        header("Location: login.php?success=1");
-    } else {
-        echo "Gagal registrasi: " . mysqli_error($conn);
-    }
-
-    mysqli_stmt_close($stmt);
-    mysqli_close($conn);
 }
+
+
+
+//close conn
+$conn->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -54,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - SURAM</title>
     <meta name="description" content="Registration page for SURAM forum">
-    <link rel="stylesheet" href="public/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="public/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         .register-section {
@@ -128,7 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <h2 class="h3 mb-0">Daftar Akun SURAM</h2>
                         </div>
                         <div class="card-body p-5">
-                            <form id="registerForm" action="register.php" method="POST">
+                            <!-- Updated form with method POST and action to register.php -->
+                            <form id="registerForm" method="POST" action="register.php">
                                 <div class="row">
                                     <!-- Personal Info -->
                                     <div class="col-md-6">
@@ -136,10 +138,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         
                                         <!-- Full Name -->
                                         <div class="mb-4">
-                                            <label for="name" class="form-label">Nama Lengkap</label>
+                                            <label for="fullName" class="form-label">Nama Lengkap</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                                <input type="text" class="form-control" id="name" name="name" placeholder="Nama lengkap" required>
+                                                <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Nama lengkap" required>
                                             </div>
                                         </div>
 
@@ -152,12 +154,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             </div>
                                         </div>
 
-                                        <!-- NIM -->
+                                        <!-- University -->
                                         <div class="mb-4">
-                                            <label for="nim" class="form-label">NIM</label>
+                                            <label for="university" class="form-label">Universitas</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                                <input type="text" class="form-control" id="nim" name="nim" placeholder="Nomor Induk Mahasiswa" required>
+                                                <input type="text" class="form-control" id="university" name="university" placeholder="Nama universitas" required>
                                             </div>
                                         </div>
                                     </div>
@@ -231,7 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </form>
                         </div>
                         <div class="card-footer text-center py-3">
-                            Sudah punya akun? <a href="login.php" class="text-decoration-none">Masuk disini</a>
+                            Sudah punya akun? <a href="login.html" class="text-decoration-none">Masuk disini</a>
                         </div>
                     </div>
                 </div>
@@ -239,7 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </section>
 
-    <script src="/project-akhir-siskem-main/template/public/js/bootstrap.bundle.min.js"></script>
+    <script src="public/js/bootstrap.bundle.min.js"></script>
     <script>
         // Toggle password visibility
         document.getElementById('togglePassword').addEventListener('click', function() {
@@ -360,32 +362,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // Form submission
+        // Modified form submission - remove the e.preventDefault() to allow actual form submission
         document.getElementById('registerForm').addEventListener('submit', function(e) {
-            
             // Check if passwords match
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             if (password !== confirmPassword) {
+                e.preventDefault(); // Only prevent if passwords don't match
                 document.getElementById('confirmPassword').classList.add('is-invalid');
                 document.getElementById('passwordMatchFeedback').style.display = 'block';
                 return;
             }
             
-            // In a real application, you would send this data to your server
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                university: document.getElementById('university').value,
-                username: document.getElementById('username').value,
-                password: password,
-                terms: document.getElementById('terms').checked
-            };
-            
-            console.log('Registration data:', formData);
-            
-            // For demo purposes, redirect to homepage after "registration"
+            // If passwords match, allow form to submit normally to register.php
         });
     </script>
 </body>

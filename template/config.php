@@ -3,7 +3,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$dbname = "forum_diskusi_baru";
+$dbname = "forum_diskusi";
 
 // Buat koneksi
 $conn = new mysqli($host, $user, $pass, $dbname);
